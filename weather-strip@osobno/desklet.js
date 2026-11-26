@@ -3,6 +3,7 @@
 // Data shaping lives in forecast.js, drawing in views.js.
 
 imports.gi.versions.Soup = '3.0';
+const Main = imports.ui.main;
 const Desklet = imports.ui.desklet;
 const Settings = imports.ui.settings;
 const St = imports.gi.St;
@@ -28,9 +29,25 @@ function dateTimeOf(day) {
     return GLib.DateTime.new_local(year, month, date, 0, 0, 0);
 }
 
+// Cinnamon opens a desklet's menu beside the desklet; when the desklet fills the screen width the menu
+// ends up off-screen. Open it where the user right-clicked instead, kept inside that monitor.
+function openMenuAtPointer(menu) {
+    menu._calculatePosition = function () {
+        if (!this.actor.visible)
+            this.box.show();
+        const [pointerX, pointerY] = global.get_pointer();
+        const [, , naturalWidth, naturalHeight] = this.actor.get_preferred_size();
+        const monitor = Main.layoutManager.findMonitorForActor(this.sourceActor);
+        const x = Math.min(Math.max(pointerX, monitor.x), monitor.x + monitor.width - naturalWidth);
+        const y = Math.min(Math.max(pointerY, monitor.y), monitor.y + monitor.height - naturalHeight);
+        return [Math.round(x), Math.round(y)];
+    };
+}
+
 class WeatherStripDesklet extends Desklet.Desklet {
     constructor(metadata, deskletId) {
         super(metadata, deskletId);
+        openMenuAtPointer(this._menu);
         this._session = new Soup.Session({timeout: REQUEST_TIMEOUT_SECONDS});
         this._cancellable = new Gio.Cancellable();
         this._timerId = 0;
