@@ -1,8 +1,9 @@
 // Weather strip desklet: now, the next 12 hours and the next 5 days from Open-Meteo (free, no key).
-// The location comes from an IP lookup (city level) or from the settings. Data shaping lives in
-// forecast.js, drawing in views.js.
+// The location is the city typed in the settings, or, when that is empty, an IP lookup (city level).
+// Data shaping lives in forecast.js, drawing in views.js.
 
 imports.gi.versions.Soup = '3.0';
+const Main = imports.ui.main;
 const Desklet = imports.ui.desklet;
 const Settings = imports.ui.settings;
 const St = imports.gi.St;
@@ -28,15 +29,32 @@ function dateTimeOf(day) {
     return GLib.DateTime.new_local(year, month, date, 0, 0, 0);
 }
 
+// Cinnamon opens a desklet's menu beside the desklet; when the desklet fills the screen width the menu
+// ends up off-screen. Open it where the user right-clicked instead, kept inside that monitor.
+function openMenuAtPointer(menu) {
+    menu._calculatePosition = function () {
+        if (!this.actor.visible)
+            this.box.show();
+        const [pointerX, pointerY] = global.get_pointer();
+        const [, , naturalWidth, naturalHeight] = this.actor.get_preferred_size();
+        const monitor = Main.layoutManager.findMonitorForActor(this.sourceActor);
+        const x = Math.min(Math.max(pointerX, monitor.x), monitor.x + monitor.width - naturalWidth);
+        const y = Math.min(Math.max(pointerY, monitor.y), monitor.y + monitor.height - naturalHeight);
+        return [Math.round(x), Math.round(y)];
+    };
+}
+
 class WeatherStripDesklet extends Desklet.Desklet {
     constructor(metadata, deskletId) {
         super(metadata, deskletId);
+        openMenuAtPointer(this._menu);
         this._session = new Soup.Session({timeout: REQUEST_TIMEOUT_SECONDS});
         this._cancellable = new Gio.Cancellable();
         this._timerId = 0;
         this._forecast = null;
         this._location = null;
         this._detected = null;
+        this._typedPlace = null;
         this._problem = null;
         this._refreshing = false;
 
@@ -44,9 +62,7 @@ class WeatherStripDesklet extends Desklet.Desklet {
         for (const [key, property] of [['width', 'widthPx'], ['height', 'heightPx'], ['font-size', 'fontSizePx'],
             ['glass-opacity', 'glassOpacity']])
             this.settings.bind(key, property, () => this._render());
-        for (const [key, property] of [['auto-location', 'autoLocation'], ['location-name', 'locationName'],
-            ['latitude', 'latitudeText'], ['longitude', 'longitudeText']])
-            this.settings.bind(key, property, () => this._refresh());
+        this.settings.bind('city', 'cityText', () => this._refresh());
         this.settings.bind('refresh-minutes', 'refreshMinutes', () => this._startTimer());
 
         this._root = new St.BoxLayout({style_class: 'weather-root'});
@@ -82,11 +98,13 @@ class WeatherStripDesklet extends Desklet.Desklet {
     }
 
     async _resolveLocation() {
-        if (!this.autoLocation) {
-            const manual = Forecast.manualLocation(this.locationName, this.latitudeText, this.longitudeText);
-            if (!manual)
-                throw new Error('Set a latitude and longitude in the settings');
-            return manual;
+        const city = (this.cityText || '').trim();
+        if (city) {
+            if (!this._typedPlace || this._typedPlace.city !== city) {
+                const answer = await this._getJson(Forecast.placeSearchUrl(city));
+                this._typedPlace = {city, location: Forecast.locationFromPlaceSearch(answer, city)};
+            }
+            return this._typedPlace.location;
         }
         const now = GLib.get_monotonic_time() / 1e6;
         if (this._detected && now - this._detected.at < LOCATION_MAX_AGE_SECONDS)
@@ -127,7 +145,8 @@ class WeatherStripDesklet extends Desklet.Desklet {
             contentWidth, contentHeight: this.heightPx - 2 * (OUTER_PADDING + ROOT_BORDER), nowWidth, hourWidth,
             dayWidth: Math.floor((columnsWidth - hourWidth * Forecast.HOURS_SHOWN) / Forecast.DAYS_SHOWN),
             gap: GAP, columnGap: COLUMN_GAP,
-            nowIconSize: Math.round(this.fontSizePx * 2.5), columnIconSize: Math.round(this.fontSizePx * 1.25),
+            iconDirectory: `${this.metadata.path}/weather-icons`,
+            nowIconSize: Math.round(this.fontSizePx * 3.8), columnIconSize: Math.min(hourWidth, Math.round(this.fontSizePx * 2.2)),
         };
     }
 

@@ -1,12 +1,12 @@
 # Weather strip desklet for Cinnamon
 
 A wide desktop widget for Linux Mint (Cinnamon): the weather now, the next 12 hours and the next
-5 days in one strip. Rain chance shows when it's 10% or more. Weather icons come from your icon
-theme, tinted by condition.
+5 days in one strip. Rain chance shows when it's 10% or more, and day and night have their own
+icons.
 
 - Weather from [Open-Meteo](https://open-meteo.com/): free, no account or key.
-- Location found automatically from your internet connection via [ipinfo.io](https://ipinfo.io/)
-  (city level), or typed in yourself in the settings.
+- Location: type a city in the settings, or leave it empty and the widget finds it from your internet
+  connection via [ipinfo.io](https://ipinfo.io/) (city level).
 - Refreshes every 15 minutes. If an update fails, the last forecast stays up with a note saying what
   went wrong.
 
@@ -24,9 +24,9 @@ Then right-click the desktop → **Add Desklets** → **Weather Strip**.
 
 ## Privacy
 
-With automatic location on, ipinfo.io sees your IP address once every 6 hours. Open-Meteo gets
-your coordinates rounded to two decimals (about 1 km). Turn automatic location off and type a
-nearby place's coordinates if you'd rather not use ipinfo.io.
+With the city field empty, ipinfo.io sees your IP address once every 6 hours. Type a city instead
+and only Open-Meteo is used: it gets the city name once, then coordinates rounded to two decimals
+(about 1 km).
 
 ## Development
 
@@ -37,6 +37,11 @@ gdbus call --session --dest org.Cinnamon --object-path /org/Cinnamon \
 ```
 
 `forecast.js` (weather codes, hours and days, location parsing) is plain JavaScript, tested with Node.
+
+## Credits
+
+Weather icons: [Meteocons](https://github.com/basmilius/meteocons) by Bas Milius (MIT), "fill" style,
+with the empty margins trimmed. See `weather-strip@osobno/weather-icons/LICENSE`.
 
 ## License
 

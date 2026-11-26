@@ -3,12 +3,8 @@
 // alignment, so alignment goes through box.add(actor, {...}).
 
 const St = imports.gi.St;
+const Gio = imports.gi.Gio;
 const Pango = imports.gi.Pango;
-
-// Soft tints: symbolic weather icons are solid shapes, so full-strength colour reads too heavy.
-const TINTS = {sun: 'rgba(253, 214, 99, 0.85)', moon: 'rgba(198, 202, 209, 0.75)', cloud: 'rgba(232, 234, 237, 0.70)',
-    fog: 'rgba(189, 193, 198, 0.70)', rain: 'rgba(138, 180, 248, 0.80)', ice: 'rgba(168, 218, 220, 0.80)',
-    snow: 'rgba(255, 255, 255, 0.80)', storm: 'rgba(197, 138, 249, 0.85)'};
 const PROBLEM_COLOR = '#fdd663';
 const CENTERED = {y_fill: false, y_align: St.Align.MIDDLE};
 const CENTERED_X = {x_fill: false, x_align: St.Align.MIDDLE};
@@ -21,8 +17,10 @@ function label(text, styleClass, style = '') {
     return actor;
 }
 
-function weatherIcon(item, size) {
-    return new St.Icon({icon_name: item.iconName, icon_size: size, style: `color: ${TINTS[item.tint]};`});
+// Meteocons (MIT, Bas Milius) shipped in weather-icons/; see weather-icons/LICENSE.
+function weatherIcon(item, size, iconDirectory) {
+    const file = Gio.File.new_for_path(`${iconDirectory}/${item.icon}.svg`);
+    return new St.Icon({gicon: new Gio.FileIcon({file}), icon_size: size});
 }
 
 function row(spacing, children) {
@@ -50,7 +48,7 @@ function nowBlock({forecast, location, problem, sizes}) {
     if (!forecast)
         return block;
     const {now} = forecast;
-    block.add_actor(row(10, [[weatherIcon(now, sizes.nowIconSize)], [label(`${now.temperature}°`, 'weather-now-temperature')]]));
+    block.add_actor(row(6, [[weatherIcon(now, sizes.nowIconSize, sizes.iconDirectory)], [label(`${now.temperature}°`, 'weather-now-temperature')]]));
     block.add_actor(label(now.label, 'weather-now-label'));
     block.add_actor(label(`Feels ${now.feelsLike}° · Wind ${now.wind} km/h`, 'weather-detail'));
     block.add_actor(label(`H ${now.high}°  L ${now.low}°`, 'weather-detail'));
@@ -65,7 +63,7 @@ function hourColumn(hour, sizes) {
     const column = new St.BoxLayout({vertical: true, style_class: `weather-column${hour.isNow ? ' is-now' : ''}`,
         style: `width: ${sizes.hourWidth}px; spacing: 4px;`});
     column.add_actor(cell(hour.isNow ? 'Now' : `${hour.hour}h`, 'weather-column-title', sizes.hourWidth));
-    column.add(weatherIcon(hour, sizes.columnIconSize), CENTERED_X);
+    column.add(weatherIcon(hour, sizes.columnIconSize, sizes.iconDirectory), CENTERED_X);
     column.add_actor(cell(`${hour.temperature}°`, 'weather-column-temperature', sizes.hourWidth));
     column.add_actor(cell(hour.rain || ' ', 'weather-rain', sizes.hourWidth));
     return column;
@@ -74,7 +72,7 @@ function hourColumn(hour, sizes) {
 function dayColumn(day, sizes, formatWeekday) {
     const column = new St.BoxLayout({vertical: true, style_class: 'weather-column', style: `width: ${sizes.dayWidth}px; spacing: 4px;`});
     column.add_actor(cell(formatWeekday(day.date).toUpperCase(), 'weather-column-title', sizes.dayWidth));
-    column.add(weatherIcon(day, sizes.columnIconSize), CENTERED_X);
+    column.add(weatherIcon(day, sizes.columnIconSize, sizes.iconDirectory), CENTERED_X);
     column.add_actor(cell(`${day.high}°`, 'weather-column-temperature', sizes.dayWidth));
     column.add_actor(cell(`${day.low}°`, 'weather-low', sizes.dayWidth));
     column.add_actor(cell(day.rain || ' ', 'weather-rain', sizes.dayWidth));

@@ -3,28 +3,10 @@
         "type": "header",
         "description": "Location"
     },
-    "auto-location": {
-        "type": "switch",
-        "default": true,
-        "description": "Find my location automatically (city level, from my internet connection)"
-    },
-    "location-name": {
+    "city": {
         "type": "entry",
         "default": "",
-        "description": "Place name",
-        "dependency": "!auto-location"
-    },
-    "latitude": {
-        "type": "entry",
-        "default": "",
-        "description": "Latitude (e.g. 45.81)",
-        "dependency": "!auto-location"
-    },
-    "longitude": {
-        "type": "entry",
-        "default": "",
-        "description": "Longitude (e.g. 15.98)",
-        "dependency": "!auto-location"
+        "description": "City (leave empty to find it automatically from your internet connection)"
     },
     "refresh-minutes": {
         "type": "spinbutton",
