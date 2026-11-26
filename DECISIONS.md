@@ -12,3 +12,4 @@
 | 2026-11-26 | Rain chance shown only at 10% or more | Fewer numbers to read; low chances are noise |
 | 2026-11-26 | Public repo, MIT | Owner asked for public with nothing personal |
 | 2026-11-26 | Desklet ID `weather-strip@danielvazdar` (was `@osobno`) | The suffix is the author by Cinnamon convention; "osobno" meant nothing outside the owner's folder names |
+| 2026-11-26 | Right-click menu opens at the mouse, clamped to the monitor (overrides the menu's `_calculatePosition`) | Cinnamon only checks for room on the right, then flips left without clamping: a full-width desklet pushed its menu off-screen |
