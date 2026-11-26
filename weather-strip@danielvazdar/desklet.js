@@ -13,7 +13,7 @@ const Soup = imports.gi.Soup;
 const Forecast = require('./forecast');
 const Views = require('./views');
 
-const UUID = 'weather-strip@osobno';
+const UUID = 'weather-strip@danielvazdar';
 const IP_LOOKUP_URL = 'https://ipinfo.io/json';
 const LOCATION_MAX_AGE_SECONDS = 6 * 3600;
 const REQUEST_TIMEOUT_SECONDS = 10;

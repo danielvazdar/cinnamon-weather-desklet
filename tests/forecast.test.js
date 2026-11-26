@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const forecast = require('../weather-strip@osobno/forecast.js');
+const forecast = require('../weather-strip@danielvazdar/forecast.js');
 
 function hourlyFor(day, count) {
     const time = Array.from({length: count}, (_, hour) => `${day}T${String(hour).padStart(2, '0')}:00`);
@@ -68,7 +68,7 @@ test('weather codes map to words, icons and night variants', () => {
 test('every icon the forecast can ask for is shipped', () => {
     const fs = require('node:fs');
     const path = require('node:path');
-    const directory = path.join(__dirname, '..', 'weather-strip@osobno', 'weather-icons');
+    const directory = path.join(__dirname, '..', 'weather-strip@danielvazdar', 'weather-icons');
     const codes = [0, 1, 2, 3, 45, 48, 51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75, 77, 80, 81, 82, 85, 86, 95, 96, 99, 42];
     for (const code of codes) {
         for (const isDay of [true, false]) {
