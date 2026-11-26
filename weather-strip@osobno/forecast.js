@@ -6,36 +6,33 @@ const DAYS_SHOWN = 5;
 const RAIN_CHANCE_WORTH_SHOWING = 10;
 const COORDINATE_DECIMALS = 2; // about 1 km: enough for weather, no more precise than needed
 
-// WMO weather codes as used by Open-Meteo: words, the freedesktop icon and a tint for it.
+// WMO weather codes as used by Open-Meteo -> words and a Meteocons icon (weather-icons/<name>.svg).
+// `night` is the icon after dark, when the set has one.
 const CONDITIONS = [
-    {codes: [0], label: 'Clear', icon: 'clear', tint: 'sun'},
-    {codes: [1], label: 'Mostly clear', icon: 'few-clouds', tint: 'sun'},
-    {codes: [2], label: 'Partly cloudy', icon: 'few-clouds', tint: 'cloud'},
-    {codes: [3], label: 'Overcast', icon: 'overcast', tint: 'cloud'},
-    {codes: [45, 48], label: 'Fog', icon: 'fog', tint: 'fog'},
-    {codes: [51, 53, 55], label: 'Drizzle', icon: 'showers-scattered', tint: 'rain'},
-    {codes: [56, 57], label: 'Freezing drizzle', icon: 'showers-scattered', tint: 'ice'},
-    {codes: [61], label: 'Light rain', icon: 'showers-scattered', tint: 'rain'},
-    {codes: [63], label: 'Rain', icon: 'showers', tint: 'rain'},
-    {codes: [65], label: 'Heavy rain', icon: 'showers', tint: 'rain'},
-    {codes: [66, 67], label: 'Freezing rain', icon: 'showers', tint: 'ice'},
-    {codes: [71], label: 'Light snow', icon: 'snow', tint: 'snow'},
-    {codes: [73], label: 'Snow', icon: 'snow', tint: 'snow'},
-    {codes: [75], label: 'Heavy snow', icon: 'snow', tint: 'snow'},
-    {codes: [77], label: 'Snow grains', icon: 'snow', tint: 'snow'},
-    {codes: [80], label: 'Showers', icon: 'showers-scattered', tint: 'rain'},
-    {codes: [81, 82], label: 'Heavy showers', icon: 'showers', tint: 'rain'},
-    {codes: [85, 86], label: 'Snow showers', icon: 'snow', tint: 'snow'},
-    {codes: [95], label: 'Thunderstorm', icon: 'storm', tint: 'storm'},
-    {codes: [96, 99], label: 'Thunderstorm with hail', icon: 'storm', tint: 'storm'},
+    {codes: [0], label: 'Clear', day: 'clear-day', night: 'clear-night'},
+    {codes: [1], label: 'Mostly clear', day: 'partly-cloudy-day', night: 'partly-cloudy-night'},
+    {codes: [2], label: 'Partly cloudy', day: 'partly-cloudy-day', night: 'partly-cloudy-night'},
+    {codes: [3], label: 'Overcast', day: 'overcast-day', night: 'overcast-night'},
+    {codes: [45, 48], label: 'Fog', day: 'fog-day', night: 'fog-night'},
+    {codes: [51, 53, 55], label: 'Drizzle', day: 'drizzle'},
+    {codes: [56, 57], label: 'Freezing drizzle', day: 'sleet'},
+    {codes: [61], label: 'Light rain', day: 'partly-cloudy-day-rain', night: 'partly-cloudy-night-rain'},
+    {codes: [63], label: 'Rain', day: 'rain'},
+    {codes: [65], label: 'Heavy rain', day: 'rain'},
+    {codes: [66, 67], label: 'Freezing rain', day: 'sleet'},
+    {codes: [71], label: 'Light snow', day: 'partly-cloudy-day-snow', night: 'partly-cloudy-night-snow'},
+    {codes: [73, 75, 77], label: 'Snow', day: 'snow'},
+    {codes: [80], label: 'Showers', day: 'partly-cloudy-day-rain', night: 'partly-cloudy-night-rain'},
+    {codes: [81, 82], label: 'Heavy showers', day: 'rain'},
+    {codes: [85, 86], label: 'Snow showers', day: 'partly-cloudy-day-snow', night: 'partly-cloudy-night-snow'},
+    {codes: [95], label: 'Thunderstorm', day: 'thunderstorms-rain'},
+    {codes: [96, 99], label: 'Thunderstorm with hail', day: 'hail'},
 ];
-const NIGHT_ICONS = {'clear': 'clear-night', 'few-clouds': 'few-clouds-night'};
-const UNKNOWN_CONDITION = {label: 'Unknown', icon: 'severe-alert', tint: 'cloud'};
+const UNKNOWN_CONDITION = {label: 'Unknown', day: 'cloudy'};
 
 function condition(code, isDay = true) {
     const found = CONDITIONS.find(entry => entry.codes.includes(code)) || UNKNOWN_CONDITION;
-    const nightIcon = isDay ? null : NIGHT_ICONS[found.icon];
-    return {label: found.label, iconName: `weather-${nightIcon || found.icon}-symbolic`, tint: nightIcon ? 'moon' : found.tint};
+    return {label: found.label, icon: (!isDay && found.night) || found.day};
 }
 
 // "" below 10%, so only rain worth knowing about is shown.

@@ -1,8 +1,8 @@
 # Weather strip desklet for Cinnamon
 
 A wide desktop widget for Linux Mint (Cinnamon): the weather now, the next 12 hours and the next
-5 days in one strip. Rain chance shows when it's 10% or more. Weather icons come from your icon
-theme, tinted by condition.
+5 days in one strip. Rain chance shows when it's 10% or more, and day and night have their own
+icons.
 
 - Weather from [Open-Meteo](https://open-meteo.com/): free, no account or key.
 - Location: type a city in the settings, or leave it empty and the widget finds it from your internet
@@ -37,6 +37,11 @@ gdbus call --session --dest org.Cinnamon --object-path /org/Cinnamon \
 ```
 
 `forecast.js` (weather codes, hours and days, location parsing) is plain JavaScript, tested with Node.
+
+## Credits
+
+Weather icons: [Meteocons](https://github.com/basmilius/meteocons) by Bas Milius (MIT), "fill" style,
+with the empty margins trimmed. See `weather-strip@osobno/weather-icons/LICENSE`.
 
 ## License
 

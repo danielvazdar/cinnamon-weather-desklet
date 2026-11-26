@@ -33,7 +33,7 @@ const RESPONSE = {
 test('now uses the current conditions and today\'s high and low', () => {
     const {now, updatedAt} = forecast.forecastFrom(RESPONSE);
     assert.deepEqual(now, {temperature: 2, feelsLike: 0, wind: 3, high: 4, low: 1,
-        label: 'Mostly clear', iconName: 'weather-few-clouds-night-symbolic', tint: 'moon'});
+        label: 'Mostly clear', icon: 'partly-cloudy-night'});
     assert.equal(updatedAt, '21:30');
 });
 
@@ -48,8 +48,7 @@ test('12 hours start at the current hour and run past midnight', () => {
 test('5 days start tomorrow', () => {
     const {days} = forecast.forecastFrom(RESPONSE);
     assert.deepEqual(days.map(d => d.date), ['2026-11-27', '2026-11-28', '2026-11-29', '2026-11-30', '2026-12-01']);
-    assert.deepEqual(days[2], {date: '2026-11-29', high: 5, low: -1, rain: '18%', label: 'Overcast',
-        iconName: 'weather-overcast-symbolic', tint: 'cloud'});
+    assert.deepEqual(days[2], {date: '2026-11-29', high: 5, low: -1, rain: '18%', label: 'Overcast', icon: 'overcast-day'});
     assert.equal(days[1].rain, '', 'under 10% is not worth showing');
 });
 
@@ -59,11 +58,24 @@ test('a forecast that does not cover now is an error, not a blank widget', () =>
 });
 
 test('weather codes map to words, icons and night variants', () => {
-    assert.deepEqual(forecast.condition(0, true), {label: 'Clear', iconName: 'weather-clear-symbolic', tint: 'sun'});
-    assert.equal(forecast.condition(0, false).iconName, 'weather-clear-night-symbolic');
-    assert.equal(forecast.condition(65, false).iconName, 'weather-showers-symbolic', 'rain has no night icon');
+    assert.deepEqual(forecast.condition(0, true), {label: 'Clear', icon: 'clear-day'});
+    assert.equal(forecast.condition(0, false).icon, 'clear-night');
+    assert.equal(forecast.condition(65, false).icon, 'rain', 'rain has no night icon');
     assert.equal(forecast.condition(99).label, 'Thunderstorm with hail');
-    assert.equal(forecast.condition(42).label, 'Unknown');
+    assert.deepEqual(forecast.condition(42), {label: 'Unknown', icon: 'cloudy'});
+});
+
+test('every icon the forecast can ask for is shipped', () => {
+    const fs = require('node:fs');
+    const path = require('node:path');
+    const directory = path.join(__dirname, '..', 'weather-strip@osobno', 'weather-icons');
+    const codes = [0, 1, 2, 3, 45, 48, 51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75, 77, 80, 81, 82, 85, 86, 95, 96, 99, 42];
+    for (const code of codes) {
+        for (const isDay of [true, false]) {
+            const {icon} = forecast.condition(code, isDay);
+            assert.ok(fs.existsSync(path.join(directory, `${icon}.svg`)), `missing ${icon}.svg for code ${code}`);
+        }
+    }
 });
 
 test('location comes from the IP lookup, rounded to about 1 km', () => {

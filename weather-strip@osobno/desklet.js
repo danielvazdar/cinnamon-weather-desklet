@@ -145,7 +145,8 @@ class WeatherStripDesklet extends Desklet.Desklet {
             contentWidth, contentHeight: this.heightPx - 2 * (OUTER_PADDING + ROOT_BORDER), nowWidth, hourWidth,
             dayWidth: Math.floor((columnsWidth - hourWidth * Forecast.HOURS_SHOWN) / Forecast.DAYS_SHOWN),
             gap: GAP, columnGap: COLUMN_GAP,
-            nowIconSize: Math.round(this.fontSizePx * 2.5), columnIconSize: Math.round(this.fontSizePx * 1.25),
+            iconDirectory: `${this.metadata.path}/weather-icons`,
+            nowIconSize: Math.round(this.fontSizePx * 3.8), columnIconSize: Math.min(hourWidth, Math.round(this.fontSizePx * 2.2)),
         };
     }
 
