@@ -113,13 +113,18 @@ function locationFromIpLookup(answer) {
     return {name: answer.city || 'Here', latitude: round(latitude), longitude: round(longitude)};
 }
 
-// Typed-in location from the settings, or null when it is not usable.
-function manualLocation(name, latitudeText, longitudeText) {
-    const latitude = Number(String(latitudeText).replace(',', '.'));
-    const longitude = Number(String(longitudeText).replace(',', '.'));
-    const valid = String(latitudeText).trim() && String(longitudeText).trim()
-        && Math.abs(latitude) <= 90 && Math.abs(longitude) <= 180;
-    return valid ? {name: name || 'Here', latitude: round(latitude), longitude: round(longitude)} : null;
+// Open-Meteo's free place search for a typed-in city.
+function placeSearchUrl(city) {
+    return `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city.trim())}&count=1&language=en&format=json`;
 }
 
-module.exports = {condition, rainLabel, forecastFrom, weatherUrl, locationFromIpLookup, manualLocation, HOURS_SHOWN, DAYS_SHOWN};
+// Place search answer -> {name, latitude, longitude}; no match is an error the widget shows.
+function locationFromPlaceSearch(answer, city) {
+    const place = (answer.results || [])[0];
+    if (!place)
+        throw new Error(`No place called "${city.trim()}"`);
+    return {name: place.name, latitude: round(place.latitude), longitude: round(place.longitude)};
+}
+
+module.exports = {condition, rainLabel, forecastFrom, weatherUrl, locationFromIpLookup, placeSearchUrl,
+    locationFromPlaceSearch, HOURS_SHOWN, DAYS_SHOWN};

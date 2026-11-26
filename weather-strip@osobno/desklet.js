@@ -1,6 +1,6 @@
 // Weather strip desklet: now, the next 12 hours and the next 5 days from Open-Meteo (free, no key).
-// The location comes from an IP lookup (city level) or from the settings. Data shaping lives in
-// forecast.js, drawing in views.js.
+// The location is the city typed in the settings, or, when that is empty, an IP lookup (city level).
+// Data shaping lives in forecast.js, drawing in views.js.
 
 imports.gi.versions.Soup = '3.0';
 const Desklet = imports.ui.desklet;
@@ -37,6 +37,7 @@ class WeatherStripDesklet extends Desklet.Desklet {
         this._forecast = null;
         this._location = null;
         this._detected = null;
+        this._typedPlace = null;
         this._problem = null;
         this._refreshing = false;
 
@@ -44,9 +45,7 @@ class WeatherStripDesklet extends Desklet.Desklet {
         for (const [key, property] of [['width', 'widthPx'], ['height', 'heightPx'], ['font-size', 'fontSizePx'],
             ['glass-opacity', 'glassOpacity']])
             this.settings.bind(key, property, () => this._render());
-        for (const [key, property] of [['auto-location', 'autoLocation'], ['location-name', 'locationName'],
-            ['latitude', 'latitudeText'], ['longitude', 'longitudeText']])
-            this.settings.bind(key, property, () => this._refresh());
+        this.settings.bind('city', 'cityText', () => this._refresh());
         this.settings.bind('refresh-minutes', 'refreshMinutes', () => this._startTimer());
 
         this._root = new St.BoxLayout({style_class: 'weather-root'});
@@ -82,11 +81,13 @@ class WeatherStripDesklet extends Desklet.Desklet {
     }
 
     async _resolveLocation() {
-        if (!this.autoLocation) {
-            const manual = Forecast.manualLocation(this.locationName, this.latitudeText, this.longitudeText);
-            if (!manual)
-                throw new Error('Set a latitude and longitude in the settings');
-            return manual;
+        const city = (this.cityText || '').trim();
+        if (city) {
+            if (!this._typedPlace || this._typedPlace.city !== city) {
+                const answer = await this._getJson(Forecast.placeSearchUrl(city));
+                this._typedPlace = {city, location: Forecast.locationFromPlaceSearch(answer, city)};
+            }
+            return this._typedPlace.location;
         }
         const now = GLib.get_monotonic_time() / 1e6;
         if (this._detected && now - this._detected.at < LOCATION_MAX_AGE_SECONDS)

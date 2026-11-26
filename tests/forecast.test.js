@@ -72,10 +72,12 @@ test('location comes from the IP lookup, rounded to about 1 km', () => {
     assert.throws(() => forecast.locationFromIpLookup({city: 'Nowhere'}), /no coordinates/);
 });
 
-test('a typed-in location accepts decimal commas and rejects nonsense', () => {
-    assert.deepEqual(forecast.manualLocation('Split', '43,5081', '16,4402'), {name: 'Split', latitude: 43.51, longitude: 16.44});
-    assert.equal(forecast.manualLocation('X', '', ''), null);
-    assert.equal(forecast.manualLocation('X', '123', '16'), null);
+test('a typed-in city is looked up by name', () => {
+    assert.equal(forecast.placeSearchUrl(' Slavonski Brod '),
+        'https://geocoding-api.open-meteo.com/v1/search?name=Slavonski%20Brod&count=1&language=en&format=json');
+    const answer = {results: [{name: 'Split', latitude: 43.50891, longitude: 16.43915, country: 'Croatia'}]};
+    assert.deepEqual(forecast.locationFromPlaceSearch(answer, 'split'), {name: 'Split', latitude: 43.51, longitude: 16.44});
+    assert.throws(() => forecast.locationFromPlaceSearch({generationtime_ms: 0.1}, 'Xqzzy '), /No place called "Xqzzy"/);
 });
 
 test('the request asks only for what is drawn, with rounded coordinates', () => {
