@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: "22"
       - run: node --test tests/*.test.js
-      - run: for f in weather-strip@osobno/*.js; do node --check "$f"; done
+      - run: for f in weather-strip@danielvazdar/*.js; do node --check "$f"; done
       - run: shellcheck install.sh
       - uses: gitleaks/gitleaks-action@v2
         env:

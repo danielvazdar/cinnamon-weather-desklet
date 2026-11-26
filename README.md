@@ -33,7 +33,7 @@ and only Open-Meteo is used: it gets the city name once, then coordinates rounde
 ```sh
 node --test tests/*.test.js
 gdbus call --session --dest org.Cinnamon --object-path /org/Cinnamon \
-  --method org.Cinnamon.ReloadXlet 'weather-strip@osobno' 'DESKLET'
+  --method org.Cinnamon.ReloadXlet 'weather-strip@danielvazdar' 'DESKLET'
 ```
 
 `forecast.js` (weather codes, hours and days, location parsing) is plain JavaScript, tested with Node.
@@ -41,7 +41,7 @@ gdbus call --session --dest org.Cinnamon --object-path /org/Cinnamon \
 ## Credits
 
 Weather icons: [Meteocons](https://github.com/basmilius/meteocons) by Bas Milius (MIT), "fill" style,
-with the empty margins trimmed. See `weather-strip@osobno/weather-icons/LICENSE`.
+with the empty margins trimmed. See `weather-strip@danielvazdar/weather-icons/LICENSE`.
 
 ## License
 

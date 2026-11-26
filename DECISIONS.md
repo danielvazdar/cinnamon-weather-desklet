@@ -11,3 +11,4 @@
 | 2026-11-26 | Meteocons "fill" icons (MIT) shipped in the repo, margins trimmed, day/night variants | Owner found the symbolic icons flat; 24 files from @meteocons/svg-static 0.1.0 via jsDelivr (the README's CDN 404s) |
 | 2026-11-26 | Rain chance shown only at 10% or more | Fewer numbers to read; low chances are noise |
 | 2026-11-26 | Public repo, MIT | Owner asked for public with nothing personal |
+| 2026-11-26 | Desklet ID `weather-strip@danielvazdar` (was `@osobno`) | The suffix is the author by Cinnamon convention; "osobno" meant nothing outside the owner's folder names |

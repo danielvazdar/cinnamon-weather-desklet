@@ -1,5 +1,5 @@
 {
-    "uuid": "weather-strip@osobno",
+    "uuid": "weather-strip@danielvazdar",
     "name": "Weather Strip",
     "description": "Weather now, the next 12 hours and the next 5 days, from Open-Meteo (free, no key)",
     "prevent-decorations": true,
