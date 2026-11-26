@@ -1,0 +1,77 @@
+{
+    "location-header": {
+        "type": "header",
+        "description": "Location"
+    },
+    "auto-location": {
+        "type": "switch",
+        "default": true,
+        "description": "Find my location automatically (city level, from my internet connection)"
+    },
+    "location-name": {
+        "type": "entry",
+        "default": "",
+        "description": "Place name",
+        "dependency": "!auto-location"
+    },
+    "latitude": {
+        "type": "entry",
+        "default": "",
+        "description": "Latitude (e.g. 45.81)",
+        "dependency": "!auto-location"
+    },
+    "longitude": {
+        "type": "entry",
+        "default": "",
+        "description": "Longitude (e.g. 15.98)",
+        "dependency": "!auto-location"
+    },
+    "refresh-minutes": {
+        "type": "spinbutton",
+        "default": 15,
+        "min": 5,
+        "max": 120,
+        "step": 5,
+        "units": "minutes",
+        "description": "Refresh every"
+    },
+    "look-header": {
+        "type": "header",
+        "description": "Look"
+    },
+    "width": {
+        "type": "spinbutton",
+        "default": 1000,
+        "min": 700,
+        "max": 2400,
+        "step": 10,
+        "units": "px",
+        "description": "Width"
+    },
+    "height": {
+        "type": "spinbutton",
+        "default": 190,
+        "min": 140,
+        "max": 400,
+        "step": 10,
+        "units": "px",
+        "description": "Height"
+    },
+    "font-size": {
+        "type": "spinbutton",
+        "default": 17,
+        "min": 10,
+        "max": 22,
+        "step": 1,
+        "units": "px",
+        "description": "Text size"
+    },
+    "glass-opacity": {
+        "type": "scale",
+        "default": 0.65,
+        "min": 0.15,
+        "max": 0.95,
+        "step": 0.05,
+        "description": "Background darkness"
+    }
+}

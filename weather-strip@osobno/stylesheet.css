@@ -1,0 +1,22 @@
+/* Glass, matching the calendar desklet. The root font size comes from the "Text size" setting. */
+
+.weather-root {
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background-gradient-direction: vertical;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.weather-status { font-size: 0.85em; color: rgba(255, 255, 255, 0.55); }
+.weather-now-temperature { font-size: 2.3em; font-weight: 600; color: #ffffff; }
+.weather-now-label { font-weight: 600; color: #ffffff; }
+.weather-detail { font-size: 0.9em; color: rgba(255, 255, 255, 0.65); }
+
+.weather-divider { width: 1px; background-color: rgba(255, 255, 255, 0.12); }
+
+.weather-column-title { font-size: 0.85em; font-weight: 600; color: rgba(255, 255, 255, 0.60); }
+.weather-column.is-now .weather-column-title { color: #8ab4f8; }
+.weather-column-temperature { font-weight: 600; color: #ffffff; }
+.weather-low { font-size: 0.92em; color: rgba(255, 255, 255, 0.50); }
+.weather-rain { font-size: 0.82em; font-weight: 600; color: #8ab4f8; }
